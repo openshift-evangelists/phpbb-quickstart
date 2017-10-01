@@ -1,0 +1,15 @@
+#!/bin/bash
+
+set -x
+
+set -eo pipefail
+
+# When the custom image is run as a S2I builder we allow for the user to
+# provide their own plugins, themes and languages directories. We need to
+# stash these away and they will be applied only when the final application
+# image is run so that they can be applied to what is contained in the
+# persistent volume.
+
+mkdir -p /opt/app-root/downloads
+
+rm -rf /tmp/src

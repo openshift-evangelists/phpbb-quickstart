@@ -1,0 +1,37 @@
+#!/bin/bash
+
+set -x
+
+set -eo pipefail
+
+# If phpBB has not been installed yet, unpack it.
+
+if [ ! -d phpbb ]; then
+    tar --strip-components=1 -xjf /opt/app-root/downloads/phpbb.tar.bz2
+fi
+
+if [ ! -s config.php ]; then
+    cat > config.php << !
+<?php
+// phpBB auto-generated configuration file
+// Do not change anything in this file!
+\$dbms = 'phpbb\\\\db\\\\driver\\\\mysqli';
+\$dbhost = '$MYSQL_HOST';
+\$dbport = '3306';
+\$dbname = '$MYSQL_DATABASE';
+\$dbuser = '$MYSQL_USER';
+\$dbpasswd = '$MYSQL_PASSWORD';
+\$table_prefix = 'phpbb_';
+\$phpbb_adm_relative_path = 'adm/';
+\$acm_type = 'phpbb\\\\cache\\\\driver\\\\file';
+
+@define('PHPBB_INSTALLED', true);
+// @define('PHPBB_DISPLAY_LOAD_TIME', true);
+@define('PHPBB_ENVIRONMENT', 'production');
+// @define('DEBUG_CONTAINER', true);
+!
+fi
+
+# Execute the original run script, replacing this script as current process.
+
+exec /usr/libexec/s2i/run

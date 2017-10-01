@@ -1,0 +1,42 @@
+#!/bin/bash
+
+set -x
+
+set -eo pipefail
+
+# During this initial build phase we are going to construct a new custom
+# image based off the default PHP S2I builder. The resulting image can
+# be run directly to create a standalone instance of phpBB.
+
+# Use latest stable version of WordPress if no version is specified.
+
+PHPBB_INSTALL_VERSION=${PHPBB_INSTALL_VERSION:-3.2.1}
+
+# Download phpBB.
+
+mkdir -p /opt/app-root/downloads
+
+curl -Ls https://www.phpbb.com/files/release/phpBB-${PHPBB_INSTALL_VERSION}.tar.bz2 > /opt/app-root/downloads/phpbb.tar.bz2
+
+echo ${PHPBB_INSTALL_VERSION} > /opt/app-root/downloads/phpbb-version.txt
+
+# This S2I assemble script is only used when creating the custom image.
+# For when running the image, or using it as a S2I builder, we use a second
+# set of custom S2I scripts. We now need to move these into the correct
+# location and have the custom image use those.
+
+mkdir -p /opt/app-root/s2i
+
+mv /tmp/src/builder/assemble /opt/app-root/s2i/assemble
+mv /tmp/src/builder/run /opt/app-root/s2i/run
+mv /tmp/src/builder/save-artifacts /opt/app-root/s2i/save-artifacts
+
+mkdir -p /tmp/.s2i
+
+mv /tmp/src/builder/image_metadata.json /tmp/.s2i/image_metadata.json
+
+rm -rf /tmp/src
+
+# Fixup permissions on directories and files.
+
+fix-permissions /opt/app-root
