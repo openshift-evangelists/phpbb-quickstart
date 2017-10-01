@@ -10,6 +10,7 @@
             "iconClass": "icon-php"
 	}
     },
+    "message": "A phpBB instance with MySQL database has been created in your project with name: ${APPLICATION_NAME}.\n\nThe database settings you should use when stepping though the phpBB setup are:\n\n    Database type: MySQL with MySQLi Extension\n    Database server hostname or DSN: 127.0.0.1\n    Database server port: 3306\n    Database username: ${DATABASE_USERNAME}\n    Database password: ${DATABASE_PASSWORD}\n    Database name: phpbb\n\nFor more information about using this template, see https://github.com/openshift-evangelists/phpbb-quickstart",
     "parameters": [
         {
             "name": "APPLICATION_NAME",
@@ -143,40 +144,6 @@
                                         "memory": "${WORDPRESS_MEMORY_LIMIT}"
 				    }
                                 },
-				"readinessProbe": {
-				    "failureThreshold": 3,
-				    "httpGet": {
-					"path": "/install/app.php",
-					"port": 8080,
-					"scheme": "HTTP",
-					"httpHeaders": [
-					    {
-						"name": "X-Forwarded-Proto",
-						"value": "https"
-					    }
-					]
-				    },
-				    "periodSeconds": 10,
-				    "successThreshold": 1,
-				    "timeoutSeconds": 1
-				},
-				"livenessProbe": {
-				    "failureThreshold": 3,
-				    "httpGet": {
-					"path": "/install/app.php",
-					"port": 8080,
-					"scheme": "HTTP",
-					"httpHeaders": [
-					    {
-						"name": "X-Forwarded-Proto",
-						"value": "https"
-					    }
-					]
-				    },
-				    "periodSeconds": 10,
-				    "successThreshold": 1,
-				    "timeoutSeconds": 1
-				},
                                 "env": [
                                     {
                                         "name": "MYSQL_DATABASE",
@@ -193,10 +160,6 @@
                                     {
                                         "name": "MYSQL_HOST",
                                         "value": "127.0.0.1"
-                                    },
-                                    {
-                                        "name": "MYSQL_TABLE_PREFIX",
-                                        "value": "wp_"
                                     }
                                 ],
                                 "volumeMounts": [
